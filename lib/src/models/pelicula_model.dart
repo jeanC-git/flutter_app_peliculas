@@ -1,7 +1,7 @@
 class Peliculas {
-  List<Pelicula> items = new List();
+  List<Pelicula> items = [];
   Peliculas();
-  Peliculas.fromJsonList(List<dynamic> jsonList){
+  Peliculas.fromJsonList(List<dynamic> jsonList) {
     if (jsonList == null) {
       return;
     }
@@ -46,7 +46,7 @@ class Pelicula {
     this.voteCount,
   });
 
-  Pelicula.fromJsonMap(Map<String, dynamic> json){
+  Pelicula.fromJsonMap(Map<String, dynamic> json) {
     adult = json['adult'];
     backdropPath = json['backdrop_path'];
     genreIds = json['genre_ids'].cast<int>();
@@ -54,7 +54,7 @@ class Pelicula {
     originalLanguage = json['original_language'];
     originalTitle = json['original_title'];
     overview = json['overview'];
-    popularity = json['popularity'] /1;
+    popularity = json['popularity'] / 1;
     posterPath = json['poster_path'];
     releaseDate = json['release_date'];
     title = json['title'];
@@ -63,12 +63,19 @@ class Pelicula {
     voteCount = json['vote_count'];
   }
 
-  getPosterImg(){
+  getPosterImg() {
     if (posterPath == null) {
       return 'https://www.eduprizeschools.net/wp-content/uploads/2016/06/No_Image_Available.jpg';
     } else {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';
     }
   }
-}
 
+  getBackdropPathImg() {
+    if (posterPath == null) {
+      return 'https://www.eduprizeschools.net/wp-content/uploads/2016/06/No_Image_Available.jpg';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
+}
