@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:app_peliculas_2/src/models/pelicula_model.dart';
+import 'package:app_peliculas_2/src/models/acttores_model.dart';
+import 'package:app_peliculas_2/src/providers/peliculas_provider.dart';
 
 class PeliculaDetalle extends StatelessWidget {
   @override
@@ -15,7 +17,12 @@ class PeliculaDetalle extends StatelessWidget {
             SizedBox(
               height: 5.0,
             ),
-            _posterTitulo(pelicula)
+            _posterTitulo(context, pelicula),
+            _descripcion(pelicula),
+            _descripcion(pelicula),
+            _descripcion(pelicula),
+            _descripcion(pelicula),
+            _crearCasting(pelicula)
           ]))
         ],
       ),
@@ -45,11 +52,109 @@ class PeliculaDetalle extends StatelessWidget {
     );
   }
 
-  Widget _posterTitulo(Pelicula pelicula) {
+  Widget _posterTitulo(BuildContext context, Pelicula pelicula) {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         children: <Widget>[
-          Image(height: 150.0, image: NetworkImage(pelicula.getPosterImg()))
+          ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                  height: 150.0, image: NetworkImage(pelicula.getPosterImg()))),
+          SizedBox(
+            width: 20.0,
+          ),
+          Flexible(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                pelicula.title,
+                style: Theme.of(context).textTheme.headline6,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                pelicula.originalTitle,
+                style: Theme.of(context).textTheme.subtitle1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.star_border),
+                  Text(
+                    pelicula.voteAverage.toString(),
+                    style: Theme.of(context).textTheme.subtitle1,
+                  )
+                ],
+              )
+            ],
+          ))
+        ],
+      ),
+    );
+  }
+
+  Widget _descripcion(Pelicula pelicula) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+      child: Text(pelicula.overview, textAlign: TextAlign.justify),
+    );
+  }
+
+  Widget _crearCasting(Pelicula pelicula) {
+    final peliProvider = new PeliculasProvider();
+
+    return FutureBuilder(
+      future: peliProvider.getCast(pelicula.id.toString()),
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+        if (snapshot.hasData) {
+          return _crearActoresPageView(snapshot.data);
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _crearActoresPageView(List<Actor> actores) {
+    final _pageController =
+        new PageController(initialPage: 1, viewportFraction: 0.3);
+    _pageController.addListener(() {
+      if (_pageController.position.pixels <= 50) {
+        _pageController.animateToPage(1,
+            duration: Duration(milliseconds: 3000), curve: Curves.elasticOut);
+      }
+    });
+    return SizedBox(
+      height: 200.0,
+      child: PageView.builder(
+          physics: BouncingScrollPhysics(),
+          pageSnapping: false,
+          // controller: PageController(viewportFraction: 0.3, initialPage: 1),
+          controller: _pageController,
+          itemCount: actores.length,
+          itemBuilder: (context, i) => _actorTarjeta(actores[i])),
+    );
+  }
+
+  Widget _actorTarjeta(Actor actor) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+                height: 150.0,
+                fit: BoxFit.cover,
+                placeholder: AssetImage('assets/img/no-image.jpg'),
+                image: NetworkImage(actor.getFoto())),
+          ),
+          Text(
+            actor.name,
+            overflow: TextOverflow.ellipsis,
+          )
         ],
       ),
     );

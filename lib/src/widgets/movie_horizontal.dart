@@ -14,6 +14,10 @@ class MovieHorizontal extends StatelessWidget {
     final _screenSize = MediaQuery.of(context).size;
 
     _pageController.addListener(() {
+      if (_pageController.position.pixels <= 50) {
+        _pageController.animateToPage(1,
+            duration: Duration(milliseconds: 3000), curve: Curves.elasticOut);
+      }
       if (_pageController.position.pixels >=
           _pageController.position.maxScrollExtent - 200) {
         siguientePagina();
@@ -34,7 +38,7 @@ class MovieHorizontal extends StatelessWidget {
   }
 
   Widget _tarjeta(BuildContext context, Pelicula pelicula) {
-    final tarjeta =  Container(
+    final tarjeta = Container(
       margin: EdgeInsets.only(right: 15.0),
       child: Column(
         children: <Widget>[
@@ -60,7 +64,7 @@ class MovieHorizontal extends StatelessWidget {
     );
     return GestureDetector(
       child: tarjeta,
-      onTap: (){
+      onTap: () {
         Navigator.pushNamed(context, 'detalle', arguments: pelicula);
       },
     );
